@@ -22,10 +22,10 @@ import (
 
 	redisMass "github.com/garyburd/redigo/redis"
 
+	"github.com/AplikasiRentasDigital/eways-enigma-consumer/structs"
+	"github.com/AplikasiRentasDigital/eways-enigma-master/repositories/mysql"
 	"github.com/go-redis/redis/v8"
 	"github.com/spf13/viper"
-	"gitlab.com/wgroup1/enigma-consumer/structs"
-	"gitlab.com/wgroup1/enigma/repositories/mysql"
 )
 
 var API_IN_ID int = 0

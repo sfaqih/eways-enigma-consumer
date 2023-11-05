@@ -9,23 +9,22 @@ import (
 	"os"
 	"time"
 
-	"gitlab.com/wgroup1/enigma-consumer/common"
-	"gitlab.com/wgroup1/enigma/database"
-	"gitlab.com/wgroup1/enigma/middleware"
+	"github.com/AplikasiRentasDigital/eways-enigma-consumer/common"
+	"github.com/AplikasiRentasDigital/eways-enigma-master/database"
+	"github.com/AplikasiRentasDigital/eways-enigma-master/middleware"
 
-	//"gitlab.com/wgroup1/enigma-consumer/vendor/gitlab.com/wgroup1/enigma/repositories"
-	"gitlab.com/wgroup1/enigma/logic/api"
+	//"github.com/AplikasiRentasDigital/eways-enigma-consumer/vendor/github.com/AplikasiRentasDigital/eways-enigma-master/repositories"
+	"github.com/AplikasiRentasDigital/eways-enigma-master/logic/api"
 
-	engrepo "gitlab.com/wgroup1/enigma/repositories"
-	service "gitlab.com/wgroup1/enigma/services"
-	enigmastruct "gitlab.com/wgroup1/enigma/structs"
+	engrepo "github.com/AplikasiRentasDigital/eways-enigma-master/repositories"
+	service "github.com/AplikasiRentasDigital/eways-enigma-master/services"
+	enigmastruct "github.com/AplikasiRentasDigital/eways-enigma-master/structs"
 )
 
 // var (
 
-
-
-// 	//inboundlogic      api.InboundLogic             = api.NewInboundLogic(inboundservice)
+//	//inboundlogic      api.InboundLogic             = api.NewInboundLogic(inboundservice)
+//
 // )
 var ctx = context.Background()
 var RedisUrl string = ""
@@ -38,24 +37,24 @@ func main() {
 	client := common.InitializeRedis(common.REDIS_DB)
 	DB := database.NewMYSQLConn()
 
-	outboundRepository  := engrepo.NewOutboundRepository(DB)
-	outboundService     := service.NewOutboundService(outboundRepository, DB)
+	outboundRepository := engrepo.NewOutboundRepository(DB)
+	outboundService := service.NewOutboundService(outboundRepository, DB)
 
-	inboundrepository  := engrepo.NewInboundRepository(DB)
-	inboundservice     := service.NewInboundService(inboundrepository, outboundRepository, DB)
+	inboundrepository := engrepo.NewInboundRepository(DB)
+	inboundservice := service.NewInboundService(inboundrepository, outboundRepository, DB)
 
-	inboundwarepository  := engrepo.NewInboundWARepository(DB)
-	inboundwaservice     := service.NewInboundWAService(inboundwarepository, DB)
+	inboundwarepository := engrepo.NewInboundWARepository(DB)
+	inboundwaservice := service.NewInboundWAService(inboundwarepository, DB)
 
-	statusreportrepository  := engrepo.NewStatusReportRepository(DB)
-	statusreportservice     := service.NewStatusReportService(statusreportrepository)
-	statusreportlogic       := api.NewStatusReportLogic(statusreportservice, inboundservice, DB)
+	statusreportrepository := engrepo.NewStatusReportRepository(DB)
+	statusreportservice := service.NewStatusReportService(statusreportrepository)
+	statusreportlogic := api.NewStatusReportLogic(statusreportservice, inboundservice, DB)
 
 	conversationRepository := engrepo.NewConversationRepository(DB)
-	conversationService    := service.NewConversationService(conversationRepository, DB)
+	conversationService := service.NewConversationService(conversationRepository, outboundRepository, DB)
 
-	logReository   := engrepo.NewLogRepository(DB)
-	logService     := service.NewLogService(logReository)
+	logReository := engrepo.NewLogRepository(DB)
+	logService := service.NewLogService(logReository)
 	isLoop := true
 
 	for {
@@ -147,8 +146,6 @@ func main() {
 			}
 		}()
 
-
-
 		go func() {
 			for {
 
@@ -174,10 +171,8 @@ func main() {
 				elapsedAll := time.Since(startAll)
 				fmt.Println("All Inbound damcorp Took ", elapsedAll)
 
-
 			}
 		}()
-
 
 		/*
 			go func() {
@@ -231,7 +226,6 @@ func main() {
 
 			}
 		}()
-
 
 		go func() {
 			for {
@@ -353,10 +347,9 @@ func main() {
 		select {}
 	*/
 
-
 	port := os.Getenv("PORT")
 	if port == "" {
-			port = "8080"
+		port = "8080"
 	}
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", port), nil))
 

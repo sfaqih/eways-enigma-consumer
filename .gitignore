@@ -12,12 +12,12 @@
 *.out
 
 # Dependency directories (remove the comment below to include it)
-# vendor/
+vendor
 
 .env
 .env.prod
-go.mod
-go.sum
+# go.mod
+# go.sum
 .vscode
 *.crt
 *.key
@@ -27,3 +27,4 @@ go.sum
 build/
 
 *__debug_bin
+.DS_Store

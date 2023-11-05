@@ -25,8 +25,8 @@ RUN git config --global user.email "dev.wgroup@gmail.com"
 
 COPY . .
 RUN git config credential.helper store
-RUN go env -w GOPRIVATE=gitlab.com/wgroup1/enigma
-RUN go get -d gitlab.com/wgroup1/enigma@superenigma
+RUN go env -w GOPRIVATE=github.com/AplikasiRentasDigital/eways-enigma-master
+RUN go get -d github.com/AplikasiRentasDigital/eways-enigma-master@superenigma
 # RUN git remote set-url origin https://wgroup249:a99i9Y5Gz665zXiRaWLZ@gitlab.com/wgroup1/luna-consumer
 # RUN go get ssh://wgroup249:76ZNtQE/z+%bt@gitlab.com/wgroup1/luna
 RUN go mod tidy

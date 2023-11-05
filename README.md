@@ -15,14 +15,14 @@ Already a pro? Just edit this README.md and make it your own. Want to make it ea
 
 ```
 cd existing_repo
-git remote add origin https://gitlab.com/wgroup1/enigma-consumer.git
+git remote add origin https://github.com/AplikasiRentasDigital/eways-enigma-consumer.git
 git branch -M main
 git push -uf origin main
 ```
 
 ## Integrate with your tools
 
-- [ ] [Set up project integrations](https://gitlab.com/-/experiment/new_project_readme_content:73cde926f27f273fd0c77a0420c865fd?https://gitlab.com/wgroup1/enigma-consumer/-/settings/integrations)
+- [ ] [Set up project integrations](https://gitlab.com/-/experiment/new_project_readme_content:73cde926f27f273fd0c77a0420c865fd?https://github.com/AplikasiRentasDigital/eways-enigma-consumer/-/settings/integrations)
 
 ## Collaborate with your team
 
