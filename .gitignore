@@ -16,8 +16,8 @@ vendor
 
 .env
 .env.prod
-go.mod
-# go.sum
+# go.mod
+go.sum
 .vscode
 *.crt
 *.key
