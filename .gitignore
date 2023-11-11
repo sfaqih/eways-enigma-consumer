@@ -16,7 +16,7 @@ vendor
 
 .env
 .env.prod
-# go.mod
+go.mod
 # go.sum
 .vscode
 *.crt
@@ -28,3 +28,4 @@ build/
 
 *__debug_bin
 .DS_Store
+enigmaconsumer
