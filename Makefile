@@ -11,3 +11,6 @@ prod-build:
 	go mod vendor;go mod verify;go get -d github.com/AplikasiRentasDigital/eways-enigma-master@superenigma;go mod vendor;rm enigmaconsumer.tar;
 	docker build -t enigmaconsumer:superenigma .;echo itdev123$$;docker save enigmaconsumer:superenigma > enigmaconsumer.tar;
 	microk8s ctr image import enigmaconsumer.tar
+build-for-linux:
+	GOOS=linux GOARCH=amd64 go1.19 build -o enigmaconsumer main.go
+	
