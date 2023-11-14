@@ -6,12 +6,12 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
 	"time"
 
 	"github.com/AplikasiRentasDigital/eways-enigma-consumer/common"
 	"github.com/AplikasiRentasDigital/eways-enigma-master/database"
 	"github.com/AplikasiRentasDigital/eways-enigma-master/middleware"
+	"github.com/spf13/viper"
 
 	//"github.com/AplikasiRentasDigital/eways-enigma-consumer/vendor/github.com/AplikasiRentasDigital/eways-enigma-master/repositories"
 	"github.com/AplikasiRentasDigital/eways-enigma-master/logic/api"
@@ -347,11 +347,11 @@ func main() {
 		select {}
 	*/
 
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8080"
+	serverPort := viper.Get("PORT").(string)
+	if serverPort == "" {
+		serverPort = "8080"
 	}
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", port), nil))
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", serverPort), nil))
 
 }
 
