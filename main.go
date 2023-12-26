@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/AplikasiRentasDigital/eways-enigma-consumer/common"
+	commonmaster "github.com/AplikasiRentasDigital/eways-enigma-master/common"
 	"github.com/AplikasiRentasDigital/eways-enigma-master/database"
 	"github.com/AplikasiRentasDigital/eways-enigma-master/middleware"
 	"github.com/spf13/viper"
@@ -104,8 +105,7 @@ func main() {
 				result, err := client.BLPop(ctx, 0*time.Second, common.OUTBOUND_QUEUE_BULK).Result()
 
 				if err != nil {
-					//fmt.Println(err.Error())
-					log.Println("error go routine in line 126_main ", err.Error())
+					log.Println("error go routine in line 108_main ", err.Error())
 				} else {
 					startAll := time.Now()
 					if result != nil && len(result) > 0 {
@@ -125,7 +125,7 @@ func main() {
 							elapsedSingle := time.Since(startSingle)
 
 							outMessages = append(outMessages, &outResp)
-							log.Println("Single Outbound Took ", outboundMessage.Channel, outboundMessage.To, elapsedSingle)
+							log.Println("Outbound Bulk Took ", outboundMessage.Channel, outboundMessage.To, elapsedSingle)
 
 							if len(outMessages) == 200 || j+1 == len(outbound.Messages) {
 								logService.InsertLogBulk(outMessages)
@@ -146,6 +146,59 @@ func main() {
 			}
 		}()
 
+		// Outbound Simulation
+		go func() {
+			for {
+
+				// var outboundLog enigmastruct.OutboundBulkLog
+				var outbound enigmastruct.OutboundConsumer
+				result, err := client.BLPop(ctx, 0*time.Second, commonmaster.OUTBOUND_QUEUE_SIMULATION).Result()
+
+				if err != nil {
+					//fmt.Println(err.Error())
+					log.Println("error go routine in line 159_main ", err.Error())
+				} else {
+					startAll := time.Now()
+					if result != nil && len(result) > 0 {
+						json.Unmarshal([]byte(result[1]), &outbound)
+						// json.Unmarshal([]byte(outboundLog.RequestBody), &outbound)
+
+						var outMessages []*enigmastruct.HTTPRequest
+						t := make(map[string]enigmastruct.VendorService)
+						for k := range outbound.VendorService {
+							t[outbound.VendorService[k].Channel] = outbound.VendorService[k]
+						}
+
+						for j, outboundMessage := range outbound.Messages {
+							startSingle := time.Now()
+
+							outboundMessage.Simulation = true
+
+							outResp := outboundService.SendOutboundBulk(outboundMessage, t, outbound.ClientID)
+							elapsedSingle := time.Since(startSingle)
+
+							outMessages = append(outMessages, &outResp)
+							log.Println("Outbound Simulation Took ", outboundMessage.Channel, outboundMessage.To, elapsedSingle)
+
+							if len(outMessages) == 200 || j+1 == len(outbound.Messages) {
+								logService.InsertLogBulk(outMessages)
+								outboundService.InsertOutboundBulk(outMessages, outbound.ClientID)
+								outMessages = []*enigmastruct.HTTPRequest{}
+								bulkTime := time.Since(startAll)
+								log.Println("Insert outbound simulation and api_log : ", bulkTime)
+							}
+						}
+
+						// logService.InsertLogBulk(outMessages)
+
+						elapsedAll := time.Since(startAll)
+						//fmt.Println("All Outbound Took ", elapsedAll)
+						log.Println("All Outbound Simulation Took ", elapsedAll)
+					}
+				}
+			}
+		}()
+
 		go func() {
 			for {
 
@@ -153,7 +206,7 @@ func main() {
 				result, err := client.BLPop(ctx, 0*time.Second, common.DAMCORP_INBOUND_WA).Result()
 
 				if err != nil {
-					log.Println("error go routine in line 93 ")
+					log.Println("error go routine in line 207 ")
 				}
 
 				startAll := time.Now()
