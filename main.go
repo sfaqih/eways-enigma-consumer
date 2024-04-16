@@ -119,10 +119,10 @@ func main() {
 						}
 
 						for j, outboundMessage := range outbound.Messages {
-							go func(oM enigmastruct.OutMessage, obnd enigmastruct.OutboundConsumer) {
+							go func(oM enigmastruct.OutMessage, tData map[string]enigmastruct.VendorService, obnd enigmastruct.OutboundConsumer) {
 								startSingle := time.Now()
 
-								outResp := outboundService.SendOutboundBulk(oM, t, obnd.ClientID)
+								outResp := outboundService.SendOutboundBulk(oM, tData, obnd.ClientID)
 								elapsedSingle := time.Since(startSingle)
 
 								outMessages = append(outMessages, &outResp)
@@ -135,7 +135,7 @@ func main() {
 									bulkTime := time.Since(startAll)
 									log.Println("Bulk insert outbound and api_log : ", bulkTime)
 								}
-							}(outboundMessage, outbound)
+							}(outboundMessage, t, outbound)
 						}
 
 						// logService.InsertLogBulk(outMessages)
