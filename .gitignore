@@ -10,3 +10,34 @@
 *.sublime-workspace
 *.sublime-project
 
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+
+# Dependency directories (remove the comment below to include it)
+vendor
+
+.env
+.env.prod
+# go.mod
+go.sum
+.vscode
+*.crt
+*.key
+*.csr
+*.tar
+*.log
+build/
+
+__debug_bin*
+.DS_Store
+enigmaconsumer
