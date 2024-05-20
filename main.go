@@ -108,7 +108,7 @@ func main() {
 					log.Println("error go routine in line 108_main ", err.Error())
 				} else {
 					startAll := time.Now()
-					if result != nil && len(result) > 0 {
+					if len(result) > 0 {
 						json.Unmarshal([]byte(result[1]), &outbound)
 						// json.Unmarshal([]byte(outboundLog.RequestBody), &outbound)
 
@@ -119,21 +119,23 @@ func main() {
 						}
 
 						for j, outboundMessage := range outbound.Messages {
-							startSingle := time.Now()
+							go func(oM enigmastruct.OutMessage, tData map[string]enigmastruct.VendorService, obnd enigmastruct.OutboundConsumer) {
+								startSingle := time.Now()
 
-							outResp := outboundService.SendOutboundBulk(outboundMessage, t, outbound.ClientID)
-							elapsedSingle := time.Since(startSingle)
+								outResp := outboundService.SendOutboundBulk(oM, tData, obnd.ClientID)
+								elapsedSingle := time.Since(startSingle)
 
-							outMessages = append(outMessages, &outResp)
-							log.Println("Outbound Bulk Took ", outboundMessage.Channel, outboundMessage.To, elapsedSingle)
+								outMessages = append(outMessages, &outResp)
+								log.Println("Outbound Bulk Took ", oM.Channel, oM.To, elapsedSingle)
 
-							if len(outMessages) == 200 || j+1 == len(outbound.Messages) {
-								logService.InsertLogBulk(outMessages)
-								outboundService.InsertOutboundBulk(outMessages, outbound.ClientID)
-								outMessages = []*enigmastruct.HTTPRequest{}
-								bulkTime := time.Since(startAll)
-								log.Println("Bulk insert outbound and api_log : ", bulkTime)
-							}
+								if len(outMessages) == 200 || j+1 == len(obnd.Messages) {
+									logService.InsertLogBulk(outMessages)
+									outboundService.InsertOutboundBulk(outMessages, obnd.ClientID)
+									outMessages = []*enigmastruct.HTTPRequest{}
+									bulkTime := time.Since(startAll)
+									log.Println("Bulk insert outbound and api_log : ", bulkTime)
+								}
+							}(outboundMessage, t, outbound)
 						}
 
 						// logService.InsertLogBulk(outMessages)
