@@ -58,6 +58,8 @@ func main() {
 	logService := service.NewLogService(logReository)
 	isLoop := true
 
+	fmt.Printf("Server running version 0.0.8\n")
+
 	for {
 		// do something
 		if !isLoop { // the condition stops matching
@@ -119,23 +121,41 @@ func main() {
 						}
 
 						for j, outboundMessage := range outbound.Messages {
-							go func(oM enigmastruct.OutMessage, tData map[string]enigmastruct.VendorService, obnd enigmastruct.OutboundConsumer) {
-								startSingle := time.Now()
 
-								outResp := outboundService.SendOutboundBulk(oM, tData, obnd.ClientID)
-								elapsedSingle := time.Since(startSingle)
+							startSingle := time.Now()
 
-								outMessages = append(outMessages, &outResp)
-								log.Println("Outbound Bulk Took ", oM.Channel, oM.To, elapsedSingle)
+							outResp := outboundService.SendOutboundBulk(outboundMessage, t, outbound.ClientID)
+							elapsedSingle := time.Since(startSingle)
 
-								if len(outMessages) == 200 || j+1 == len(obnd.Messages) {
-									logService.InsertLogBulk(outMessages)
-									outboundService.InsertOutboundBulk(outMessages, obnd.ClientID)
-									outMessages = []*enigmastruct.HTTPRequest{}
-									bulkTime := time.Since(startAll)
-									log.Println("Bulk insert outbound and api_log : ", bulkTime)
-								}
-							}(outboundMessage, t, outbound)
+							outMessages = append(outMessages, &outResp)
+							log.Println("Outbound Bulk Took ", outboundMessage.Channel, outboundMessage.To, elapsedSingle)
+
+							if len(outMessages) == 200 || j+1 == len(outbound.Messages) {
+								logService.InsertLogBulk(outMessages)
+								outboundService.InsertOutboundBulk(outMessages, outbound.ClientID)
+								outMessages = []*enigmastruct.HTTPRequest{}
+								bulkTime := time.Since(startAll)
+								log.Println("Bulk insert outbound and api_log : ", bulkTime)
+							}
+
+							// TODO: fix this go func code
+							// go func(oM enigmastruct.OutMessage, tData map[string]enigmastruct.VendorService, obnd enigmastruct.OutboundConsumer) {
+							// 	startSingle := time.Now()
+
+							// 	outResp := outboundService.SendOutboundBulk(oM, tData, obnd.ClientID)
+							// 	elapsedSingle := time.Since(startSingle)
+
+							// 	outMessages = append(outMessages, &outResp)
+							// 	log.Println("Outbound Bulk Took ", oM.Channel, oM.To, elapsedSingle)
+
+							// 	if len(outMessages) == 200 || j+1 == len(obnd.Messages) {
+							// 		logService.InsertLogBulk(outMessages)
+							// 		outboundService.InsertOutboundBulk(outMessages, obnd.ClientID)
+							// 		outMessages = []*enigmastruct.HTTPRequest{}
+							// 		bulkTime := time.Since(startAll)
+							// 		log.Println("Bulk insert outbound and api_log : ", bulkTime)
+							// 	}
+							// }(outboundMessage, t, outbound)
 						}
 
 						// logService.InsertLogBulk(outMessages)
