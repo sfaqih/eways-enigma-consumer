@@ -58,7 +58,7 @@ func main() {
 	logService := service.NewLogService(logReository)
 	isLoop := true
 
-	fmt.Printf("Server running version 0.0.8\n")
+	fmt.Printf("Server running version 0.0.10\n")
 
 	for {
 		// do something
