@@ -124,7 +124,7 @@ func main() {
 						for j, outboundMessage := range outbound.Messages {
 
 							startSingle := time.Now()
-							time.Sleep(8 * time.Second)
+							time.Sleep(2 * time.Second)
 
 							outResp := outboundService.SendOutboundBulk(outboundMessage, t, outbound.ClientID)
 							elapsedSingle := time.Since(startSingle)
