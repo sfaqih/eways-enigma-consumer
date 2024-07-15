@@ -10,6 +10,7 @@ import (
 
 	"github.com/AplikasiRentasDigital/eways-enigma-consumer/common"
 	commonmaster "github.com/AplikasiRentasDigital/eways-enigma-master/common"
+	"github.com/AplikasiRentasDigital/eways-enigma-master/constants"
 	"github.com/AplikasiRentasDigital/eways-enigma-master/database"
 	"github.com/AplikasiRentasDigital/eways-enigma-master/middleware"
 	"github.com/spf13/viper"
@@ -58,7 +59,7 @@ func main() {
 	logService := service.NewLogService(logReository)
 	isLoop := true
 
-	fmt.Printf("Server running version 0.0.10\n")
+	fmt.Printf("Server running version %s\n", constants.VERSION_APP)
 
 	for {
 		// do something
@@ -123,6 +124,7 @@ func main() {
 						for j, outboundMessage := range outbound.Messages {
 
 							startSingle := time.Now()
+							time.Sleep(8 * time.Second)
 
 							outResp := outboundService.SendOutboundBulk(outboundMessage, t, outbound.ClientID)
 							elapsedSingle := time.Since(startSingle)
