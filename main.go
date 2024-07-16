@@ -124,8 +124,6 @@ func main() {
 						for j, outboundMessage := range outbound.Messages {
 
 							startSingle := time.Now()
-							time.Sleep(1 * time.Second)
-
 							outResp := outboundService.SendOutboundBulk(outboundMessage, t, outbound.ClientID)
 							elapsedSingle := time.Since(startSingle)
 
@@ -138,6 +136,10 @@ func main() {
 								outMessages = []*enigmastruct.HTTPRequest{}
 								bulkTime := time.Since(startAll)
 								log.Println("Bulk insert outbound and api_log : ", bulkTime)
+							}
+
+							if elapsedSingle < 1*time.Second {
+								time.Sleep(1 * time.Second)
 							}
 
 							// TODO: fix this go func code
