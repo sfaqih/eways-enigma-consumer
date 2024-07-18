@@ -116,15 +116,15 @@ func main() {
 						// json.Unmarshal([]byte(outboundLog.RequestBody), &outbound)
 
 						var outMessages []*enigmastruct.HTTPRequest
-						t := make(map[string]enigmastruct.VendorService)
+						vendorService := make(map[string]enigmastruct.VendorService)
 						for k := range outbound.VendorService {
-							t[outbound.VendorService[k].Channel] = outbound.VendorService[k]
+							vendorService[outbound.VendorService[k].Channel] = outbound.VendorService[k]
 						}
 
 						for j, outboundMessage := range outbound.Messages {
 
 							startSingle := time.Now()
-							outResp := outboundService.SendOutboundBulk(outboundMessage, t, outbound.ClientID)
+							outResp := outboundService.SendOutboundBulk(outboundMessage, vendorService, outbound.ClientID)
 							elapsedSingle := time.Since(startSingle)
 
 							outMessages = append(outMessages, &outResp)
@@ -138,8 +138,10 @@ func main() {
 								log.Println("Bulk insert outbound and api_log : ", bulkTime)
 							}
 
-							if elapsedSingle < 1*time.Second {
-								time.Sleep(1 * time.Second)
+							if vendorService[outboundMessage.Channel].Alias == "QONTAK" {
+								if elapsedSingle < 1*time.Second {
+									time.Sleep((1*time.Second - elapsedSingle))
+								}
 							}
 
 							// TODO: fix this go func code
