@@ -10,6 +10,7 @@ import (
 
 	"github.com/AplikasiRentasDigital/eways-enigma-consumer/common"
 	commonmaster "github.com/AplikasiRentasDigital/eways-enigma-master/common"
+	"github.com/AplikasiRentasDigital/eways-enigma-master/constants"
 	"github.com/AplikasiRentasDigital/eways-enigma-master/database"
 	"github.com/AplikasiRentasDigital/eways-enigma-master/middleware"
 	"github.com/spf13/viper"
@@ -57,6 +58,8 @@ func main() {
 	logReository := engrepo.NewLogRepository(DB)
 	logService := service.NewLogService(logReository)
 	isLoop := true
+
+	fmt.Printf("Server running version %s\n", constants.VERSION_APP)
 
 	for {
 		// do something
@@ -113,29 +116,52 @@ func main() {
 						// json.Unmarshal([]byte(outboundLog.RequestBody), &outbound)
 
 						var outMessages []*enigmastruct.HTTPRequest
-						t := make(map[string]enigmastruct.VendorService)
+						vendorService := make(map[string]enigmastruct.VendorService)
 						for k := range outbound.VendorService {
-							t[outbound.VendorService[k].Channel] = outbound.VendorService[k]
+							vendorService[outbound.VendorService[k].Channel] = outbound.VendorService[k]
 						}
 
 						for j, outboundMessage := range outbound.Messages {
-							go func(oM enigmastruct.OutMessage, tData map[string]enigmastruct.VendorService, obnd enigmastruct.OutboundConsumer) {
-								startSingle := time.Now()
 
-								outResp := outboundService.SendOutboundBulk(oM, tData, obnd.ClientID)
-								elapsedSingle := time.Since(startSingle)
+							startSingle := time.Now()
+							outResp := outboundService.SendOutboundBulk(outboundMessage, vendorService, outbound.ClientID)
+							elapsedSingle := time.Since(startSingle)
 
-								outMessages = append(outMessages, &outResp)
-								log.Println("Outbound Bulk Took ", oM.Channel, oM.To, elapsedSingle)
+							outMessages = append(outMessages, &outResp)
+							log.Println("Outbound Bulk Took ", outboundMessage.Channel, outboundMessage.To, elapsedSingle)
 
-								if len(outMessages) == 200 || j+1 == len(obnd.Messages) {
-									logService.InsertLogBulk(outMessages)
-									outboundService.InsertOutboundBulk(outMessages, obnd.ClientID)
-									outMessages = []*enigmastruct.HTTPRequest{}
-									bulkTime := time.Since(startAll)
-									log.Println("Bulk insert outbound and api_log : ", bulkTime)
+							if len(outMessages) == 200 || j+1 == len(outbound.Messages) {
+								logService.InsertLogBulk(outMessages)
+								outboundService.InsertOutboundBulk(outMessages, outbound.ClientID)
+								outMessages = []*enigmastruct.HTTPRequest{}
+								bulkTime := time.Since(startAll)
+								log.Println("Bulk insert outbound and api_log : ", bulkTime)
+							}
+
+							if vendorService[outboundMessage.Channel].Alias == "QONTAK" {
+								if elapsedSingle < 1*time.Second {
+									time.Sleep((1*time.Second - elapsedSingle))
 								}
-							}(outboundMessage, t, outbound)
+							}
+
+							// TODO: fix this go func code
+							// go func(oM enigmastruct.OutMessage, tData map[string]enigmastruct.VendorService, obnd enigmastruct.OutboundConsumer) {
+							// 	startSingle := time.Now()
+
+							// 	outResp := outboundService.SendOutboundBulk(oM, tData, obnd.ClientID)
+							// 	elapsedSingle := time.Since(startSingle)
+
+							// 	outMessages = append(outMessages, &outResp)
+							// 	log.Println("Outbound Bulk Took ", oM.Channel, oM.To, elapsedSingle)
+
+							// 	if len(outMessages) == 200 || j+1 == len(obnd.Messages) {
+							// 		logService.InsertLogBulk(outMessages)
+							// 		outboundService.InsertOutboundBulk(outMessages, obnd.ClientID)
+							// 		outMessages = []*enigmastruct.HTTPRequest{}
+							// 		bulkTime := time.Since(startAll)
+							// 		log.Println("Bulk insert outbound and api_log : ", bulkTime)
+							// 	}
+							// }(outboundMessage, t, outbound)
 						}
 
 						// logService.InsertLogBulk(outMessages)
