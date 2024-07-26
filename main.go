@@ -139,8 +139,11 @@ func main() {
 							}
 
 							if vendorService[outboundMessage.Channel].Alias == "QONTAK" {
-								if elapsedSingle < 1*time.Second {
-									time.Sleep((1*time.Second - elapsedSingle))
+								rateLimit := 1 * time.Second // rate limit from qontak
+								if elapsedSingle < rateLimit {
+									diffTime := rateLimit - elapsedSingle
+									sleepTime := diffTime + 300*time.Millisecond
+									time.Sleep(sleepTime)
 								}
 							}
 
