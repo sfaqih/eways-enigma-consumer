@@ -138,13 +138,18 @@ func main() {
 								log.Println("Bulk insert outbound and api_log : ", bulkTime)
 							}
 
+							// if vendorService[outboundMessage.Channel].Alias == "QONTAK" {
+							// 	rateLimit := 1 * time.Second // rate limit from qontak
+							// 	if elapsedSingle < rateLimit {
+							// 		diffTime := rateLimit - elapsedSingle
+							// 		sleepTime := diffTime + 300*time.Millisecond
+							// 		time.Sleep(sleepTime)
+							// 	}
+							// }
+
 							if vendorService[outboundMessage.Channel].Alias == "QONTAK" {
-								rateLimit := 1 * time.Second // rate limit from qontak
-								if elapsedSingle < rateLimit {
-									diffTime := rateLimit - elapsedSingle
-									sleepTime := diffTime + 300*time.Millisecond
-									time.Sleep(sleepTime)
-								}
+								sleepTime := 1 * time.Second
+								time.Sleep(sleepTime)
 							}
 
 							// TODO: fix this go func code
