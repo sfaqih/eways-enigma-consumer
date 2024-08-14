@@ -1,12 +1,11 @@
-module gitlab.com/wgroup1/enigmaconsumer
+module github.com/AplikasiRentasDigital/eways-enigma-consumer
 
 go 1.19
 
 // For speed up development
-replace github.com/AplikasiRentasDigital/eways-enigma-master => ../enigma
+replace github.com/AplikasiRentasDigital/eways-enigma-master => ../eways-enigma-master
 
 require (
-	github.com/AplikasiRentasDigital/eways-enigma-consumer v0.0.0-20231105083804-8557f9a50afd
 	github.com/AplikasiRentasDigital/eways-enigma-master v0.0.6
 	github.com/garyburd/redigo v1.6.4
 	github.com/go-redis/redis/v8 v8.11.5
